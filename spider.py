@@ -13,13 +13,13 @@ chrome = webdriver.Chrome(service=service)
 # 配置项
 
 name = '123456'  # 账号
-pwd = '123456'  # 密码
-realname = '张三'  # 真实姓名
+pwd = '132456l'  # 密码
+realname = '123'  # 真实姓名
 safe_time = 3  # 安全间隔时间
 servernum = 0  # 选择服务器 填： 0,1,2,3
 retry = True  # 失败重试
 
-servers = ['http://127.0.0.1/', 'http://127.0.0.1/', 'http://127.0.0.1/', 'http://127.0.0.1/'] #填写教务服务器网址
+servers = ['http://127.0.0.1/', 'http://127.0.0.1/', 'http://127.0.0.1/', 'http://127.0.0.1/']
 gnmkdms = ['', '', '', '']
 
 
@@ -45,7 +45,7 @@ def recognize():
 
 def auto_Login():
     chrome.get(servers[servernum])
-    print(get_time() + "尝试登录" + str(servernum) + '号服务器\n')
+    print(get_time() + "尝试登录" + str(servernum) + '号服务器')
     if chrome.title == 'ERROR - 出错啦！':
         return False
     try:
@@ -85,48 +85,68 @@ def get_score():
         return False
     time.sleep(5)
     try:
-        chrome.find_element(By.XPATH,
-                            '/html/body/div/div[2]/div[2]/div/iframe/html/body/form/div[1]/div[3]/p[1]/input[3]').click()
+        chrome.switch_to.frame('zhuti')
+        print(chrome.title)
+        if chrome.title == 'ERROR - 出错啦！' or chrome.title == '欢迎使用正方教务管理系统！请登录':
+            chrome.switch_to.default_content()
+            while 1:
+                if auto_Login():
+                    break
+            return False
+        chrome.switch_to.default_content()
+
     except:
-        print('\033[1;31m后面代码没写完自己手动点一下吧\033[0m')
-        a = input()
+        print('\033[1;31m成绩获取错误\033[0m')
         return False
     return True
 
 
 def main():
-    trytimes = 0
-    succeed = False
     chrome.maximize_window()
     while 1:
-        trytimes += 1
-        if auto_Login():
-            succeed = True
-            print(get_time() + "登陆成功\n")
-            break
-        else:
-            print(get_time() + "\033[1;31m尝试登录失败\033[0m\n")
-            if retry:
-                if trytimes > 10 and succeed == False:
-                    print(get_time() + '\033[0;32m已经为你尝试了' + str(trytimes) + '次登录, 均登录失败。建议更换服务器或检查你的账号密码是否正确。\033[0m')
-                time.sleep(safe_time)
-                continue
-            else:
+        trytimes = 0
+        succeed = False
+        while 1:
+            trytimes += 1
+            if auto_Login():
+                succeed = True
+                print(get_time() + "登陆成功\n")
                 break
-    time.sleep(1)
-    while 1:
-        status = get_score()
-        if status:
-            print(get_time() + "查询成功")
-            break
-        else:
-            print(get_time() + "\033[1;31m查询失败\033[0m")
-            if retry:
-                time.sleep(safe_time)
-                continue
             else:
+                print(get_time() + "\033[1;31m尝试登录失败\033[0m\n")
+                if retry:
+                    if trytimes > 10 and succeed == False:
+                        print(get_time() + '\033[0;32m已经为你尝试了' + str(
+                            trytimes) + '次登录, 全部登录失败。建议更换服务器或检查你的账号密码是否正确。\033[0m')
+                    time.sleep(safe_time)
+                    continue
+                else:
+                    break
+        time.sleep(1)
+        trygetscore = 0
+        get_scoreFaile = False
+        while 1:
+            if trygetscore >= 5:
+                get_scoreFaile = True
                 break
-    a = input()
+            trygetscore +=1
+            status = get_score()
+            if status:
+                print(get_time() + "查询成功")
+                break
+            else:
+                print(get_time() + "\033[1;31m查询失败\033[0m")
+                if retry:
+                    time.sleep(safe_time)
+                    continue
+                else:
+                    break
+        if get_scoreFaile is True:
+            continue
+        else:
+            a = input()
+
+
 
 
 main()
