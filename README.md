@@ -3,7 +3,7 @@
 
 ### 写在最前
 ***
-这个爬虫是一个半成品，可以自动跳到成绩页面并保存成绩，后续功能正在开发中..
+这个爬虫是一个半成品，可以自动跳到成绩页面并保存成绩，后续功能略😁..
 ***
 
 ### 能力
@@ -32,7 +32,7 @@ https://www.google.cn/intl/zh-CN/chrome/
 
 ```
 pip install ddddocr
-pip install ddddocr
+pip install selenium
 ```
 
 ##### 自动安装
